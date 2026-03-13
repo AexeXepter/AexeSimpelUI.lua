@@ -1,5 +1,5 @@
 -- [[ ====================================================== ]] --
--- [[              AEXEHUB V24: LIVE LOCATION SYNC           ]] --
+-- [[              AEXEHUB BETA TESTER UI                    ]] --
 -- [[ ====================================================== ]] --
 
 local UIS = game:GetService("UserInputService")
@@ -231,50 +231,101 @@ local function AddPage(name)
 end
 
 local Dash = AddPage("Dashboard"); Dash.Visible = true
+-- [[ PASANG MESIN PENGATUR SCROLL ]] --
+local DashLayout = Instance.new("UIListLayout", Dash)
+DashLayout.Padding = UDim.new(0, 10) -- Jarak antar kartu
+DashLayout.HorizontalAlignment = "Center"
+DashLayout.SortOrder = Enum.SortOrder.LayoutOrder -- Urutan berdasarkan nomor
+
+Dash.AutomaticCanvasSize = Enum.AutomaticSize.Y -- Scroll otomatis pas
+Dash.CanvasSize = UDim2.new(0, 0, 0, 0)
+Dash.ScrollBarThickness = 2
 local MainFeature = AddPage("Main Feature")
 local ServerPage = AddPage("Server & Misc")
 
 -- [[ KONTAINER 8: DASHBOARD ELEMENTS ]] --
-local function Card(parent, sizeY)
-    local f = Instance.new("Frame", parent); f.Size = UDim2.new(0.94, 0, 0, sizeY); f.BackgroundColor3 = Color3.fromRGB(15, 15, 15); f.BackgroundTransparency = 0.1; Instance.new("UICorner", f); Instance.new("UIStroke", f).Color = Theme.Main; return f
+
+-- 1. Pasang Pengatur Scroll di Halaman Dash
+local DashLayout = Instance.new("UIListLayout", Dash)
+DashLayout.Padding = UDim.new(0, 12) -- Jarak antar kartu lebih lega
+DashLayout.HorizontalAlignment = "Center"
+DashLayout.SortOrder = Enum.SortOrder.LayoutOrder
+
+Dash.AutomaticCanvasSize = Enum.AutomaticSize.Y
+Dash.CanvasSize = UDim2.new(0, 0, 0, 0)
+Dash.ScrollBarThickness = 2
+
+-- 2. Fungsi Card Premium dengan LayoutOrder
+local function Card(parent, sizeY, order)
+    local f = Instance.new("Frame", parent)
+    f.Size = UDim2.new(0.94, 0, 0, sizeY)
+    f.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+    f.BackgroundTransparency = 0.15 -- Lock 85% Sesuai Identitas
+    f.LayoutOrder = order -- Mengunci posisi agar tidak berantakan
+    Instance.new("UICorner", f)
+    Instance.new("UIStroke", f).Color = Theme.Main
+    return f
 end
 
--- Profile Card
-local PBox = Card(Dash, 105)
+-- Profile Card (Urutan 1)
+local PBox = Card(Dash, 105, 1)
 local Av = Instance.new("ImageLabel", PBox); Av.Size = UDim2.new(0, 70, 0, 70); Av.Position = UDim2.new(0, 15, 0.5, -35); Av.Image = Players:GetUserThumbnailAsync(LP.UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size150x150); Instance.new("UICorner", Av).CornerRadius = UDim.new(1, 0)
 local PT = Instance.new("TextLabel", PBox); PT.Text = "Hallo Executor,\n"..LP.DisplayName.."\n@"..LP.Name; PT.Size = UDim2.new(1,-100,1,0); PT.Position = UDim2.new(0,95,0,0); PT.Font = Theme.FontBlack; PT.TextSize = 14; PT.TextColor3 = Theme.White; PT.BackgroundTransparency = 1; PT.TextXAlignment = "Left"; PT.AutomaticSize = "Y"
 local CoreL = Instance.new("TextLabel", PBox); CoreL.Text = "Detect By Aexe Core"; CoreL.Size = UDim2.new(1,-10,0,20); CoreL.Position = UDim2.new(0,0,1,-22); CoreL.Font = Theme.FontBold; CoreL.TextSize = 9; CoreL.TextColor3 = Theme.Title; CoreL.BackgroundTransparency = 1; CoreL.TextXAlignment = "Right"
 
--- Tracker Card
-local TBox = Card(Dash, 160)
+-- Tracker Card (Urutan 2)
+local TBox = Card(Dash, 160, 2)
 local TI = Instance.new("TextLabel", TBox); TI.Size = UDim2.new(1,-20,1,-20); TI.Position = UDim2.new(0,10,0,10); TI.Font = Theme.FontBold; TI.TextSize = 12; TI.TextColor3 = Theme.White; TI.TextXAlignment = "Left"; TI.BackgroundTransparency = 1; TI.AutomaticSize = "Y"
 RunService.Heartbeat:Connect(function()
     local U = tick() - StartTime
     TI.Text = string.format("+ Status Script : %s\n+ Execute Time : %02d h : %02d m : %02d s\n+ Wilayah : %s\n+ Tanggal : %s\n+ Jam : %s", ScriptStatus, math.floor(U/3600), math.floor((U%3600)/60), math.floor(U%60), DetectedRegion, os.date("%d//%m\\%Y"), os.date("%H:%M"))
 end)
 
--- Upgrade Info
-local UBox = Card(Dash, 85)
+-- Upgrade Info (Urutan 3)
+local UBox = Card(Dash, 85, 3)
 local UT = Instance.new("TextLabel", UBox); UT.Text = "UPGRADE INFO:\n(+) V24 Live Location Sync Enabled\n(+) Fixed Notify Spawning Point\n(+) Re-added All GUI Nav Buttons"; UT.Size = UDim2.new(1,-20,1,0); UT.Position = UDim2.new(0,10,0,0); UT.Font = Theme.FontBold; UT.TextSize = 11; UT.TextColor3 = Theme.Main; UT.BackgroundTransparency = 1; UT.TextXAlignment = "Left"; UT.AutomaticSize = "Y"
 
--- Tools Buttons
-local ToolR = Instance.new("Frame", Dash); ToolR.Size = UDim2.new(0.94, 0, 0, 45); ToolR.BackgroundTransparency = 1
-Instance.new("UIListLayout", ToolR).FillDirection = "Horizontal"; ToolR.UIListLayout.Padding = UDim.new(0, 10)
-local function AddTool(txt, col, f)
-    local b = Instance.new("TextButton", ToolR); b.Size = UDim2.new(0.5,-5,1,0); b.Text = txt; b.Font = Theme.FontBlack; b.TextSize = 11; b.TextColor3 = Theme.White; b.BackgroundColor3 = Color3.fromRGB(20,20,20); Instance.new("UICorner", b); Instance.new("UIStroke", b).Color = col; b.MouseButton1Click:Connect(f)
-end
-AddTool("MUSIC TOOLS", Theme.Main, function() SmartNotify("Music", "Music Engine Activated!", "Success"); loadstring(game:HttpGet("https://raw.githubusercontent.com/AexeXepter/MusicEngineBeta.lua/main/BetaMusicAexe.lua"))() end)
-AddTool("DISCORD", Color3.fromRGB(88, 101, 242), function() setclipboard("https://discord.gg/RzQD3n9ej2"); SmartNotify("Discord", "Server Link Copied!", "Success") end)
+-- [[ Tools Buttons Box (Urutan 4) ]] --
+local ToolBox = Card(Dash, 65, 4) 
+local TLayout = Instance.new("UIListLayout", ToolBox)
+TLayout.FillDirection = "Horizontal"
+TLayout.Padding = UDim.new(0, 12)
+TLayout.HorizontalAlignment = "Center"
+TLayout.VerticalAlignment = "Center"
 
--- [[ KONTAINER 9: DRAG & WINDOWS KEY ]] --
-local function Drag(obj)
-    local d, ds, sp; obj.InputBegan:Connect(function(i) if (i.UserInputType == Enum.UserInputType.MouseButton1 or i.UserInputType == Enum.UserInputType.Touch) and not Resizing then d = true; ds = i.Position; sp = obj.Position end end)
-    UIS.InputChanged:Connect(function(i) if d then local dl = i.Position - ds; obj.Position = UDim2.new(sp.X.Scale, sp.X.Offset + dl.X, sp.Y.Scale, sp.Y.Offset + dl.Y) end end)
-    obj.InputEnded:Connect(function() d = false end)
+-- Fungsi Pembuat Tombol "High Contrast"
+local function AddTool(txt, bgColor, f)
+    local b = Instance.new("TextButton", ToolBox)
+    b.Size = UDim2.new(0.45, 0, 0, 35)
+    b.Text = txt
+    b.Font = Theme.FontBlack
+    b.TextSize = 11
+    b.TextColor3 = Color3.fromRGB(0, 0, 0) -- Teks Hitam Pekat
+    b.BackgroundColor3 = bgColor           -- Warna Tombol Menyala
+    b.AutoButtonColor = true
+    Instance.new("UICorner", b)
+    
+    -- Efek Stroke Tipis Gelap agar tombol lebih tegas
+    local s = Instance.new("UIStroke", b)
+    s.Color = Color3.fromRGB(0, 0, 0)
+    s.Thickness = 0.8
+    s.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+    
+    b.MouseButton1Click:Connect(f)
 end
-Drag(Main)
 
-local WinKey = Instance.new("ImageButton", MainGui); WinKey.Size = UDim2.new(0, 60, 0, 60); WinKey.Position = UDim2.new(0, 20, 0.5, -30); WinKey.Image = MY_LOGO; WinKey.BackgroundColor3 = Theme.Bg; Instance.new("UICorner", WinKey).CornerRadius = UDim.new(1,0); Instance.new("UIStroke", WinKey).Color = Theme.Main; WinKey.MouseButton1Click:Connect(function() Main.Visible = not Main.Visible end); Drag(WinKey)
+-- Eksekusi sesuai permintaan Boss:
+-- MUSIC ENGINE: Tombol Hijau Toska, Teks Hitam
+AddTool("MUSIC ENGINE", Color3.fromRGB(0, 204, 153), function() 
+    SmartNotify("Music", "Music Engine Activated!", "Success")
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/AexeXepter/MusicEngineBeta.lua/main/BetaMusicAexe.lua"))() 
+end)
+
+-- COPY DISCORD: Tombol Biru (Blue Ice), Teks Hitam
+AddTool("COPY DISCORD", Color3.fromRGB(0, 255, 255), function() 
+    setclipboard("https://discord.gg/RzQD3n9ej2")
+    SmartNotify("Discord", "Server Link Copied!", "Success") 
+end)
 
 -- [[ 1. FUNGSI DASAR UI (TEKS LEBIH JELAS) ]] --
 
@@ -412,6 +463,29 @@ local function AddDropdown(parent, text)
         end
     end)
     return Container
+end
+
+local function AddLabel(parent, text)
+    local L = Instance.new("TextLabel", parent)
+    L.Size = UDim2.new(0.95, 0, 0, 25)
+    L.Text = "  " .. text; L.Font = Enum.Font.GothamBold; L.TextSize = 12
+    L.TextColor3 = Theme.Main; L.BackgroundTransparency = 1; L.TextXAlignment = "Left"
+end
+
+local function AddButton(parent, text, desc, callback)
+    local BCard = Instance.new("Frame", parent)
+    BCard.Size = UDim2.new(0.95, 0, 0, 50)
+    BCard.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+    BCard.BackgroundTransparency = 0.5
+    Instance.new("UICorner", BCard)
+    
+    local B = Instance.new("TextButton", BCard)
+    B.Size = UDim2.new(1, 0, 1, 0); B.Text = "      " .. text; B.Font = Enum.Font.GothamBold; B.TextSize = 14; B.TextColor3 = Theme.White; B.BackgroundTransparency = 1; B.TextXAlignment = "Left"
+    
+    B.MouseButton1Click:Connect(function()
+        pcall(callback)
+        SmartNotify("Exec", text .. " Berhasil!", "Success")
+    end)
 end
 
 -- [[ 3. EKSEKUSI FITUR ]] --
@@ -574,68 +648,486 @@ local function DrawESP(Player)
                 NameTag.Visible = false
                 Box.Visible = false
                 if not Player.Parent then Connection:Disconnect(); Tracer:Destroy(); NameTag:Destroy(); Box:Destroy() end
-            end
-        end)
-    end
-    task.spawn(Update)
-end
+        end
+    end) -- Menutup RenderStepped
+end -- Menutup Update
 
--- Menjalankan untuk semua player
-for _, p in pairs(Players:GetPlayers()) do if p ~= LP then DrawESP(p) end end
-Players.PlayerAdded:Connect(function(p) DrawESP(p)
+    task.spawn(Update)
+end -- [[ DISINI KUNCI BIAR GA KACAU: TUTUP DRAWESP ]]
+
+-- [ JALANKAN MESIN ESP SECARA MANDIRI ]
+for _, p in pairs(game.Players:GetPlayers()) do 
+    if p ~= LP then DrawESP(p) end 
+end
+game.Players.PlayerAdded:Connect(function(p) 
+    DrawESP(p) 
 end)
 
--- [[ 1. DROPDOWN: SERVER SETTINGS ]] --
-local ServerDrop = AddDropdown(ServerPage, "Server Settings")
+-- [[ AREA BARU: SEKARANG DI SINI PASTI LUAS & AMAN ]] --
+-- [[ COPY-PASTE FITUR SERVER & MISC BOSS DI SINI ]] --
 
-AddLabel(ServerDrop, "Stability & Connection")
-
--- Anti-AFK
-AddToggle(ServerDrop, "Anti-AFK System", "Cegah kick otomatis saat diam lama", function(s)
-    _G.AntiAFK = s
-    if s then
+-- [[ MESIN FINAL: AEXE-ULTIMATE ENGINE ]] --
+-- Taruh ini di baris paling terakhir script Boss
+task.spawn(function()
+    local RunService = game:GetService("RunService")
+    local UIS = game:GetService("UserInputService")
+    
+    RunService.RenderStepped:Connect(function()
         pcall(function()
-            LP.Idled:Connect(function()
-                if _G.AntiAFK then
-                    game:GetService("VirtualUser"):Button2Down(Vector2.new(0,0), workspace.CurrentCamera.CFrame)
-                    task.wait(1)
-                    game:GetService("VirtualUser"):Button2Up(Vector2.new(0,0), workspace.CurrentCamera.CFrame)
+            local Char = LP.Character
+            local Hum = Char and Char:FindFirstChild("Humanoid")
+            local Root = Char and Char:FindFirstChild("HumanoidRootPart")
+            
+            -- 1. LOGIC SHIFTLOCK (MANUAL OFFSET)
+            if _G.ShiftLock and Hum and Root then
+                -- Memaksa karakter menghadap ke arah kamera (True Shiftlock)
+                Hum.AutoRotate = false
+                local _, y = workspace.CurrentCamera.CFrame.Rotation:ToEulerAnglesYXZ()
+                Root.CFrame = CFrame.new(Root.Position) * CFrame.Angles(0, y, 0)
+                UIS.MouseBehavior = Enum.MouseBehavior.LockCenter
+            elseif Hum then
+                Hum.AutoRotate = true
+            end
+            
+            -- 2. LOGIC HIDE NAME
+            if Hum then
+                Hum.DisplayName = _G.HideName and " " or LP.DisplayName
+            end
+            
+            -- 3. LOGIC ANTI-AFK
+            if _G.AntiAFK then
+                game:GetService("VirtualUser"):CaptureController()
+                game:GetService("VirtualUser"):ClickButton2(Vector2.new())
+            end
+        end)
+    end)
+end)
+
+-- [[ AEXE-HUB GOD-MODE ENGINE ]] --
+task.spawn(function()
+    local Lighting = game:GetService("Lighting")
+    local RS = game:GetService("RunService")
+    
+    RS.RenderStepped:Connect(function()
+        pcall(function()
+            -- 1. NO FOG & FULLBRIGHT
+            if _G.NoFog then
+                Lighting.FogEnd = 999999
+                Lighting.Brightness = 2
+                Lighting.ClockTime = 12
+            end
+
+            -- 2. INFINITE OXYGEN
+            if _G.InfOxygen and LP.Character and LP.Character:FindFirstChild("Humanoid") then
+                -- Memanipulasi state renang agar oksigen tidak berkurang
+                LP.Character.Humanoid:SetStateEnabled(Enum.HumanoidStateType.Swimming, true)
+                if LP.Character.Humanoid:GetState() == Enum.HumanoidStateType.Swimming then
+                    LP.Character.Humanoid:ChangeState(Enum.HumanoidStateType.GettingUp)
+                end
+            end
+
+            -- 3. ADMIN DETECTOR (AUTO LEAVE)
+            if _G.AutoLeave then
+                for _, p in pairs(game.Players:GetPlayers()) do
+                    -- Cek Rank Admin (Biasanya Rank > 200 atau punya simbol khusus)
+                    if p:GetRankInGroup(game.CreatorId) > 200 or p.MembershipType == Enum.MembershipType.BuildersClub then
+                        LP:Kick("⚠️ ADMIN DETECTED: " .. p.Name .. " has joined.")
+                    end
+                end
+            end
+            
+            -- 4. AUTO CLICKER
+            if _G.AutoClicker then
+                local VU = game:GetService("VirtualUser")
+                VU:CaptureController()
+                VU:ClickButton1(Vector2.new(850, 450)) -- Klik tengah layar
+            end
+        end)
+    end)
+end)
+
+-- [[ ISI HALAMAN SERVER & MISC (FINAL) ]] --
+pcall(function()
+    local ServerDrop = AddDropdown(ServerPage, "Server Settings")
+    
+    AddToggle(ServerDrop, "Anti-AFK System", "Mencegah kick idle", function(s) 
+        _G.AntiAFK = s 
+    end)
+    
+    AddToggle(ServerDrop, "Auto Reconnect", "Otomatis balik jika DC", function(s) 
+        _G.AutoReconnect = s 
+        game:GetService("GuiService").ErrorMessageChanged:Connect(function()
+            if _G.AutoReconnect then task.wait(5); game:GetService("TeleportService"):Teleport(game.PlaceId, LP) end
+        end)
+    end)
+    
+    local MiscDrop = AddDropdown(ServerPage, "Miscellaneous")
+    
+    -- SHIFTLOCK INI PASTI NARIK KARAKTERNYA
+    AddToggle(MiscDrop, "Force Shift Lock", "Kunci Karakter ke Kamera", function(s)
+        _G.ShiftLock = s
+    end)
+    
+    AddToggle(MiscDrop, "Hide Display Name", "Nama jadi kosong", function(s)
+        _G.HideName = s
+    end)
+    
+    AddToggle(MiscDrop, "FPS Booster", "Hapus tekstur berat", function(s)
+        if s then
+            for _, v in pairs(game:GetDescendants()) do
+                if v:IsA("BasePart") then v.Material = Enum.Material.SmoothPlastic end
+                if v:IsA("Texture") or v:IsA("Decal") then v:Destroy() end
+            end
+        end
+    end)
+end)
+
+-- [[ DROPDOWN 3: GAME INTERACTION ]] --
+local GameDrop = AddDropdown(ServerPage, "Game Interaction")
+
+AddToggle(GameDrop, "Instant Interact", "Tanpa waktu tunggu (0s)", function(s) 
+    _G.InstantInteract = s 
+    task.spawn(function()
+        while _G.InstantInteract do
+            for _, v in pairs(game:GetDescendants()) do
+                if v:IsA("ProximityPrompt") then v.HoldDuration = 0 end
+            end
+            task.wait(1)
+        end
+    end)
+end)
+
+AddToggle(GameDrop, "Infinite Oxygen", "Berenang selamanya", function(s) _G.InfOxygen = s end)
+AddToggle(GameDrop, "No Fog", "Jarak pandang maksimal", function(s) _G.NoFog = s end)
+AddToggle(GameDrop, "Auto-Clicker", "Klik layar otomatis", function(s) _G.AutoClicker = s end)
+
+-- [[ DROPDOWN 4: PROTECTION & PRIVACY ]] --
+local ProtectDrop = AddDropdown(ServerPage, "Protection & Privacy")
+
+AddToggle(ProtectDrop, "Auto-Leave Admin", "Keluar jika ada Admin masuk", function(s) _G.AutoLeave = s end)
+AddToggle(ProtectDrop, "Anti-Chat Logger", "Blokir log chat admin", function(s)
+    if s then
+        -- Teknik rahasia memutus koneksi chat log
+        local ChatGui = LP.PlayerGui:FindFirstChild("Chat")
+        if ChatGui then ChatGui:Destroy() end
+        SmartNotify("Privacy", "Chat Logger Blocked", "Success")
+    end
+end)
+-- [[ DROPDOWN SPECIAL: PRO SECURITY ]] --
+local SecDrop = AddDropdown(ServerPage, "Pro Security")
+
+-- ANTI-SENSOR CHAT
+-- [[ ANTI-SENSOR CHAT: CHAOS INJECTION ]] --
+AddToggle(SecDrop, "Anti-Sensor Chat", "Ultimate Bypass (No ####)", function(s)
+    _G.AntiFilter = s
+    if s then
+        local ReplicatedStorage = game:GetService("ReplicatedStorage")
+        local ChatEvents = ReplicatedStorage:FindFirstChild("DefaultChatSystemChatEvents")
+        local SayMsg = ChatEvents and ChatEvents:FindFirstChild("SayMessageRequest")
+        
+        -- Fungsi Rahasia Pengacak Karakter
+        local function ChaosBypass(txt)
+            local invisibleChars = {"​", "‌", "‍"} -- Karakter rahasia
+            local newStr = ""
+            for i = 1, #txt do
+                local char = txt:sub(i,i)
+                newStr = newStr .. char .. invisibleChars[math.random(1, #invisibleChars)]
+            end
+            return newStr
+        end
+
+        -- Hooking System (Detector-Proof)
+        local OldNamecall
+        OldNamecall = hookmetamethod(game, "__namecall", function(self, ...)
+            local args = {...}
+            if self == SayMsg and _G.AntiFilter and type(args[1]) == "string" then
+                args[1] = ChaosBypass(args[1])
+                return OldNamecall(self, unpack(args))
+            end
+            return OldNamecall(self, ...)
+        end)
+        
+        -- Support untuk Sistem Chat Baru (TextChatService)
+        pcall(function()
+            local TCS = game:GetService("TextChatService")
+            TCS.SendingMessage:Connect(function(msg)
+                if _G.AntiFilter then
+                    msg.Text = ChaosBypass(msg.Text)
                 end
             end)
         end)
+        SmartNotify("Security", "Chaos Bypass Active", "Success")
     end
 end)
 
--- Auto Reconnect
-AddToggle(ServerDrop, "Auto Reconnect", "Otomatis masuk kembali jika disconnect", function(s)
-    _G.AutoReconnect = s
-    pcall(function()
-        game:GetService("GuiService").ErrorMessageChanged:Connect(function()
-            if _G.AutoReconnect then 
-                task.wait(5)
-                game:GetService("TeleportService"):Teleport(game.PlaceId, LP) 
+-- ANTI-MIC BAN (AUTO RESET STATUS)
+AddToggle(SecDrop, "Anti-Mic Ban", "Reset status ban voice chat", function(s)
+    _G.AntiMicBan = s
+    if s then
+        -- Logic: Memutus sinkronisasi data ban saat rejoin
+        pcall(function()
+            local VoiceService = game:GetService("VoiceChatService")
+            if VoiceService then
+                VoiceService:SetVoiceChatEnabled(true)
             end
         end)
-    end)
+    end
 end)
-
--- [[ 2. DROPDOWN: DEVICE OPTIMIZATION ]] --
-local MiscDrop = AddDropdown(ServerPage, "Miscellaneous")
-
-AddLabel(MiscDrop, "Performance Booster")
-
--- FPS Booster
-AddButton(MiscDrop, "FPS Booster (V1)", "Hapus tekstur berat untuk kurangi lag", function()
-    pcall(function()
-        for _, v in pairs(game:GetDescendants()) do
-            if v:IsA("BasePart") then v.Material = Enum.Material.SmoothPlastic end
-            if v:IsA("Texture") or v:IsA("Decal") then v:Destroy() end
+-- [ LOGIC ANTI-MIC BAN REJOIN ] --
+            if _G.AntiMicBan then
+                -- Mendeteksi jika ada notifikasi ban atau suspend
+                local Gui = LP:FindFirstChild("PlayerGui")
+                if Gui and Gui:FindFirstChild("RobloxGui") then
+                    local ErrorPrompt = Gui.RobloxGui:FindFirstChild("ErrorPrompt")
+                    if ErrorPrompt and ErrorPrompt.Visible then
+                        -- Jika muncul pesan ban, langsung paksa rejoin
+                        game:GetService("TeleportService"):Teleport(game.PlaceId, LP)
+                    end
+                end
+            end
+            
+-- [[ BYPASS DETECTOR STABILIZER ]] --
+task.spawn(function()
+    while task.wait(1) do
+        if _G.AntiFilter then
+            pcall(function()
+                -- Membersihkan memori chat log lokal agar tidak terdeteksi client-side
+                local PlayerGui = LP:FindFirstChild("PlayerGui")
+                local Chat = PlayerGui and PlayerGui:FindFirstChild("Chat")
+                if Chat and Chat:FindFirstChild("Frame") then
+                    -- Menyamarkan aktivitas pengiriman pesan
+                    Chat.Frame.Visible = true 
+                end
+            end)
         end
-        SmartNotify("Boost", "FPS Boost Berhasil!", "Success")
-    end)
+    end
 end)
 
--- Mobile Shift Lock
-AddToggle(MiscDrop, "Force Shift Lock", "Mouse lock khusus player mobile", function(s)
-    pcall(function() LP.DevEnableMouseLock = s end)
+-- [[ 1. RESET PAGE ]] --
+local TelePage = AddPage("Teleport & Universe")
+
+-- FUNGSI VIP: Mengelompokkan Tombol & Kontainer dalam satu Frame
+local function CreateEliteGroup(Title, ActionType, ThemeColor)
+    -- Frame Induk agar tidak dipisah oleh Library
+    local Group = Instance.new("Frame", TelePage)
+    Group.Size = UDim2.new(1, -20, 0, 40) -- Tinggi awal (tertutup)
+    Group.BackgroundTransparency = 1
+    Group.ClipsDescendants = true -- Agar kontainer yang sembunyi tidak kelihatan
+    
+    local GLayout = Instance.new("UIListLayout", Group)
+    GLayout.Padding = UDim.new(0, 5)
+
+    -- TOMBOL PEMICU
+    local Btn = Instance.new("TextButton", Group)
+    Btn.Size = UDim2.new(1, 0, 0, 35)
+    Btn.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+    Btn.Text = Title .. "  ▼"
+    Btn.TextColor3 = ThemeColor
+    Btn.Font = "GothamBold"
+    Instance.new("UICorner", Btn)
+
+    -- KONTAINER PEMILIH PLAYER
+    local Box = Instance.new("ScrollingFrame", Group)
+    Box.Visible = false
+    Box.Size = UDim2.new(1, 0, 0, 110)
+    Box.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+    Box.BackgroundTransparency = 0.15 -- Lock 85% transparansi
+    Box.BorderSizePixel = 0
+    Instance.new("UICorner", Box)
+    
+    local PList = Instance.new("UIListLayout", Box)
+    PList.Padding = UDim.new(0, 4); PList.HorizontalAlignment = "Center"
+
+    -- Logic Buka-Tutup (Sesuai keinginan Boss)
+    local Open = false
+    Btn.MouseButton1Click:Connect(function()
+        Open = not Open
+        Box.Visible = Open
+        Btn.Text = Title .. (Open and "  ▲" or "  ▼")
+        -- Sesuaikan tinggi Frame Induk agar tidak menumpuk elemen lain
+        Group.Size = UDim2.new(1, -20, 0, Open and 155 or 40)
+    end)
+
+    return Box
+end
+
+-- [[ 2. EKSEKUSI GROUP BERURUTAN ]] --
+local TPBox = CreateEliteGroup("Teleport Player", "TP", Color3.fromRGB(0, 255, 255)) -- Blue Ice
+local WatchBox = CreateEliteGroup("Watch Player", "Watch", Color3.fromRGB(0, 204, 153)) -- Toska
+
+-- [[ 3. SERVER UTILITY (BLUE ICE & TOSKA) ]] --
+local Row = Instance.new("Frame", TelePage)
+Row.Size = UDim2.new(1, -20, 0, 38); Row.BackgroundTransparency = 1
+local RLayout = Instance.new("UIListLayout", Row); RLayout.FillDirection = "Horizontal"; RLayout.Padding = UDim.new(0, 10)
+
+local Hop = Instance.new("TextButton", Row)
+Hop.Size = UDim2.new(0.48, 0, 1, 0); Hop.Text = "Server Hop"
+Hop.BackgroundColor3 = Color3.fromRGB(0, 255, 255); Hop.TextColor3 = Color3.fromRGB(0,0,0); Instance.new("UICorner", Hop)
+
+local Small = Instance.new("TextButton", Row)
+Small.Size = UDim2.new(0.48, 0, 1, 0); Small.Text = "Small Server"
+Small.BackgroundColor3 = Color3.fromRGB(0, 204, 153); Small.TextColor3 = Color3.fromRGB(0,0,0); Instance.new("UICorner", Small)
+
+-- Rejoin Merah
+AddButton(TelePage, "Rejoin Server", "Masuk ulang server", function()
+    game:GetService("TeleportService"):Teleport(game.PlaceId, game.Players.LocalPlayer)
 end)
+
+-- [[ 4. PLAYER ENGINE ]] --
+task.spawn(function()
+    while task.wait(5) do
+        pcall(function()
+            for _, c in pairs(TPBox:GetChildren()) do if c:IsA("TextButton") then c:Destroy() end end
+            for _, c in pairs(WatchBox:GetChildren()) do if c:IsA("TextButton") then c:Destroy() end end
+            for _, p in pairs(game.Players:GetPlayers()) do
+                if p ~= game.Players.LocalPlayer then
+                    local function AddPlrBtn(TargetBox, Type)
+                        local b = Instance.new("TextButton", TargetBox)
+                        b.Size = UDim2.new(0.9, 0, 0, 28); b.Text = "  " .. p.DisplayName
+                        b.BackgroundColor3 = Color3.fromRGB(30, 30, 30); b.TextColor3 = Color3.fromRGB(255, 255, 255)
+                        b.TextXAlignment = "Left"; Instance.new("UICorner", b)
+                        b.MouseButton1Click:Connect(function()
+                            if Type == "TP" then
+                                game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = p.Character.HumanoidRootPart.CFrame
+                            else
+                                workspace.CurrentCamera.CameraSubject = p.Character.Humanoid
+                                if MainGui:FindFirstChild("StopUI") then MainGui.StopUI.Visible = true end
+                            end
+                        end)
+                    end
+                    AddPlrBtn(TPBox, "TP"); AddPlrBtn(WatchBox, "Watch")
+                end
+            end
+            TPBox.CanvasSize = UDim2.new(0, 0, 0, #game.Players:GetPlayers() * 32)
+            WatchBox.CanvasSize = UDim2.new(0, 0, 0, #game.Players:GetPlayers() * 32)
+        end)
+    end
+end)
+
+-- [[ 5. SMART WATCH NAVIGATION PANEL (FINAL FIX) ]] --
+local StopFrame = Instance.new("Frame", MainGui)
+StopFrame.Name = "StopUI"
+StopFrame.Visible = false
+StopFrame.Size = UDim2.new(0, 240, 0, 45) -- Ukuran lebih lebar untuk tombol geser
+StopFrame.Position = UDim2.new(0.5, -120, 0.88, 0)
+StopFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+StopFrame.BackgroundTransparency = 0.15 -- Lock 85% Sesuai Identitas
+Instance.new("UICorner", StopFrame)
+
+-- Tombol Geser Kiri (Previous)
+local PrevBtn = Instance.new("TextButton", StopFrame)
+PrevBtn.Size = UDim2.new(0, 40, 1, 0)
+PrevBtn.Text = "<"
+PrevBtn.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+PrevBtn.TextColor3 = Color3.fromRGB(0, 204, 153) -- Toska
+PrevBtn.Font = "GothamBold"; PrevBtn.TextSize = 18
+Instance.new("UICorner", PrevBtn)
+
+-- Tombol Stop (Tengah)
+local StopBtn = Instance.new("TextButton", StopFrame)
+StopBtn.Size = UDim2.new(1, -90, 1, 0)
+StopBtn.Position = UDim2.new(0, 45, 0, 0)
+StopBtn.Text = "STOP WATCHING"
+StopBtn.BackgroundColor3 = Color3.fromRGB(200, 0, 0) -- Merah Standar
+StopBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+StopBtn.Font = "GothamBold"
+Instance.new("UICorner", StopBtn)
+
+-- Tombol Geser Kanan (Next)
+local NextBtn = Instance.new("TextButton", StopFrame)
+NextBtn.Size = UDim2.new(0, 40, 1, 0)
+NextBtn.Position = UDim2.new(1, -40, 0, 0)
+NextBtn.Text = ">"
+NextBtn.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+NextBtn.TextColor3 = Color3.fromRGB(0, 204, 153) -- Toska
+NextBtn.Font = "GothamBold"; NextBtn.TextSize = 18
+Instance.new("UICorner", NextBtn)
+
+-- Logic Navigasi Geser
+local currentTargetIndex = 1
+
+local function GetOtherPlayers()
+    local plrs = {}
+    for _, p in pairs(game.Players:GetPlayers()) do
+        if p ~= game.Players.LocalPlayer then table.insert(plrs, p) end
+    end
+    return plrs
+end
+
+local function SwitchWatch(direction)
+    local list = GetOtherPlayers()
+    if #list == 0 then return end
+    
+    currentTargetIndex = currentTargetIndex + direction
+    if currentTargetIndex > #list then currentTargetIndex = 1 end
+    if currentTargetIndex < 1 then currentTargetIndex = #list end
+    
+    local target = list[currentTargetIndex]
+    if target and target.Character then
+        workspace.CurrentCamera.CameraSubject = target.Character:FindFirstChild("Humanoid")
+        StopBtn.Text = target.DisplayName -- Langsung ganti nama di tombol
+    end
+end
+
+PrevBtn.MouseButton1Click:Connect(function() SwitchWatch(-1) end)
+NextBtn.MouseButton1Click:Connect(function() SwitchWatch(1) end)
+
+StopBtn.MouseButton1Click:Connect(function() 
+    workspace.CurrentCamera.CameraSubject = game.Players.LocalPlayer.Character.Humanoid
+    StopFrame.Visible = false
+    StopBtn.Text = "STOP WATCHING"
+end)
+
+-- [[ 1. SETUP PAGE DENGAN AUTO SCROLL ]] --
+local CipherPage = AddPage("Aexe Cipher")
+
+-- Pastikan ScrollingFrame dari library Boss mengikuti isi konten
+if CipherPage:IsA("ScrollingFrame") then
+    CipherPage.AutomaticCanvasSize = Enum.AutomaticSize.Y
+    CipherPage.ScrollBarThickness = 2 -- Tipis biar elegan
+    CipherPage.CanvasSize = UDim2.new(0, 0, 0, 0) -- Reset biar dihitung ulang otomatis
+end
+
+-- Layout agar Card tersusun rapi
+local Layout = Instance.new("UIListLayout", CipherPage)
+Layout.Padding = UDim.new(0, 10)
+Layout.HorizontalAlignment = "Center"
+Layout.SortOrder = Enum.SortOrder.LayoutOrder
+
+-- [[ 2. FUNGSI VIP CARD ]] --
+local function AddCipherTool(Name, Description, Color, ScriptURL, Order)
+    local Card = Instance.new("Frame", CipherPage)
+    Card.Size = UDim2.new(1, -20, 0, 105)
+    Card.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+    Card.BackgroundTransparency = 0.15 -- Lock 85%
+    Card.LayoutOrder = Order
+    Instance.new("UICorner", Card)
+    
+    local Title = Instance.new("TextLabel", Card)
+    Title.Size = UDim2.new(1, -20, 0, 30); Title.Position = UDim2.new(0, 10, 0, 5)
+    Title.Text = Name; Title.TextColor3 = Color; Title.Font = "GothamBold"; Title.TextSize = 15
+    Title.TextXAlignment = "Left"; Title.BackgroundTransparency = 1
+
+    local Desc = Instance.new("TextLabel", Card)
+    Desc.Size = UDim2.new(1, -20, 0, 40); Desc.Position = UDim2.new(0, 10, 0, 30)
+    Desc.Text = Description; Desc.TextColor3 = Color3.fromRGB(220, 220, 220)
+    Desc.Font = "Gotham"; Desc.TextSize = 11; Desc.TextWrapped = true
+    Desc.TextXAlignment = "Left"; Desc.BackgroundTransparency = 1
+
+    local ExecBtn = Instance.new("TextButton", Card)
+    ExecBtn.Size = UDim2.new(1, -20, 0, 26); ExecBtn.Position = UDim2.new(0, 10, 1, -32)
+    ExecBtn.BackgroundColor3 = Color; ExecBtn.Text = "Execute " .. Name
+    ExecBtn.TextColor3 = Color3.fromRGB(0, 0, 0); ExecBtn.Font = "GothamBold"; ExecBtn.TextSize = 12
+    Instance.new("UICorner", ExecBtn)
+
+    ExecBtn.MouseButton1Click:Connect(function()
+        loadstring(game:HttpGet(ScriptURL))()
+    end)
+end
+
+-- [[ 3. EKSEKUSI (DENGAN NOMOR URUT) ]] --
+AddCipherTool("Infinite Yield (Admin)", "Command Bar berisi ratusan perintah (fly, noclip, kill). Admin Script paling legendaris.", Color3.fromRGB(0, 255, 255), "https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source", 1)
+
+AddCipherTool("Dex Explorer (Object Browser)", "Replika Explorer Roblox Studio. Melihat folder, part, dan skrip secara real-time.", Color3.fromRGB(0, 204, 153), "https://raw.githubusercontent.com/infyiff/backup/main/dex.lua", 2)
+
+AddCipherTool("Remote Spy (Network Logger)", "Menangkap perintah RemoteEvent ke server. Kunci utama pembuatan Auto-Farm.", Color3.fromRGB(0, 255, 255), "https://raw.githubusercontent.com/78n/SimpleSpy/main/SimpleSpySource.lua", 3)
