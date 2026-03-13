@@ -1,5 +1,5 @@
 -- [[ ====================================================== ]] --
--- [[              AEXEHUB BETA TESTER UI                    ]] --
+-- [[              AEXEHUB V24: LIVE LOCATION SYNC           ]] --
 -- [[ ====================================================== ]] --
 
 local UIS = game:GetService("UserInputService")
@@ -326,6 +326,79 @@ AddTool("COPY DISCORD", Color3.fromRGB(0, 255, 255), function()
     setclipboard("https://discord.gg/RzQD3n9ej2")
     SmartNotify("Discord", "Server Link Copied!", "Success") 
 end)
+
+-- [[ SETUP SERVICE ]] --
+local UIS = game:GetService("UserInputService")
+local TS = game:GetService("TweenService")
+
+-- [[ FUNGSI DRAG GLOBAL (Bisa untuk Main UI & Windows Key) ]] --
+local function MakeDraggable(obj)
+    local dragging, dragInput, dragStart, startPos
+    
+    obj.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            dragging = true
+            dragStart = input.Position
+            startPos = obj.Position
+            
+            input.Changed:Connect(function()
+                if input.UserInputState == Enum.UserInputState.End then
+                    dragging = false
+                end
+            end)
+        end
+    end)
+    
+    obj.InputChanged:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+            dragInput = input
+        end
+    end)
+    
+    UIS.InputChanged:Connect(function(input)
+        if input == dragInput and dragging then
+            local delta = input.Position - dragStart
+            obj.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+        end
+    end)
+end
+
+-- AKTIFKAN DRAG PADA MAIN UI
+-- Pastikan variabelnya 'Main' atau ganti sesuai nama Frame utama Boss
+if Main then
+    MakeDraggable(Main)
+end
+
+-- [[ WINDOWS KEY LOGO (LOGO AEHUB) ]] --
+local WinKey = Instance.new("ImageButton", MainGui)
+WinKey.Name = "AexeWindowsKey"
+WinKey.Size = UDim2.new(0, 55, 0, 55)
+WinKey.Position = UDim2.new(0, 15, 0.5, -27) -- Posisi kiri tengah
+WinKey.Image = "rbxassetid://93650668075002" -- Ganti dengan ID Logo Boss
+WinKey.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+WinKey.BackgroundTransparency = 0.15 -- Lock 85%
+WinKey.ZIndex = 10 -- Pastikan di paling atas
+
+local WinCorner = Instance.new("UICorner", WinKey)
+WinCorner.CornerRadius = UDim.new(1, 0) -- Bulat sempurna
+
+local WinStroke = Instance.new("UIStroke", WinKey)
+WinStroke.Color = Color3.fromRGB(0, 255, 255) -- Blue Ice
+WinStroke.Thickness = 1.5
+
+-- Logic Klik Windows Key
+WinKey.MouseButton1Click:Connect(function()
+    if Main then
+        Main.Visible = not Main.Visible
+        -- Efek klik simpel
+        TS:Create(WinKey, TweenInfo.new(0.2), {Size = UDim2.new(0, 50, 0, 50)}):Play()
+        task.wait(0.1)
+        TS:Create(WinKey, TweenInfo.new(0.2), {Size = UDim2.new(0, 55, 0, 55)}):Play()
+    end
+end)
+
+-- AKTIFKAN DRAG PADA WINDOWS KEY
+MakeDraggable(WinKey)
 
 -- [[ 1. FUNGSI DASAR UI (TEKS LEBIH JELAS) ]] --
 
