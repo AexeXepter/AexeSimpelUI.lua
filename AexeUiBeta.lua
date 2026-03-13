@@ -1,5 +1,5 @@
 -- [[ ====================================================== ]] --
--- [[              AEXEHUB V24: LIVE LOCATION SYNC           ]] --
+-- [[              AEXEHUB BETA TESTER : ADD FOR UI          ]] --
 -- [[ ====================================================== ]] --
 
 local UIS = game:GetService("UserInputService")
